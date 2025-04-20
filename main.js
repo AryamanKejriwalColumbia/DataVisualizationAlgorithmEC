@@ -1,3 +1,21 @@
+
+function compute_loss(x, y) {
+  let expPart = Math.exp(Math.sin(2.5 * x) + Math.cos(3 * y));
+  let sqrtPart = Math.sqrt(x * x + y * y);
+  return -0.25 + 0.13 * expPart + 0.4 * sqrtPart;
+  
+}
+
+function compute_gradient(x, y) {
+  let expPart = Math.exp(Math.sin(2.5 * x) + Math.cos(3 * y));
+  let sqrtPart = Math.sqrt(x * x + y * y);
+
+  let dL_dx = 0.13 * expPart*Math.cos(2.5*x) * 2.5 + (0.4 * x)/sqrtPart;
+  let dL_dy = 0.13 * expPart*(-Math.sin(3*y)) * 3 + (0.4 * y)/sqrtPart;
+
+  return [dL_dx, dL_dy];
+}
+
 function setup() {
   createCanvas(700, 700);
 }
