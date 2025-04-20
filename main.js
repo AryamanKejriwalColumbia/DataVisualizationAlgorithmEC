@@ -38,6 +38,7 @@ function get_loss_surface_points(x_min, x_max, y_min, y_max, x_res, y_res) {
 
 function setup() {
   createCanvas(700, 700);
+  console.log(get_loss_surface_points(-1, 1, -1, 1, 100, 100));
 }
 
 function draw() {
