@@ -16,6 +16,26 @@ function compute_gradient(x, y) {
   return [dL_dx, dL_dy];
 }
 
+function get_loss_surface_points(x_min, x_max, y_min, y_max, x_res, y_res) {
+  const points = [];
+
+  const x_step = (x_max - x_min) / (x_res - 1);
+  const y_step = (y_max - y_min) / (y_res - 1);
+
+  for (let i = 0; i < x_res; i++) {
+    const row = [];
+    const x = x_min + i * x_step;
+    for (let j = 0; j < y_res; j++) {
+      const y = y_min + j * y_step;
+      const z = compute_loss(x, y);
+      row.push([x, y, z]);
+    }
+    points.push(row);
+  }
+
+  return points;
+}
+
 function setup() {
   createCanvas(700, 700);
 }
