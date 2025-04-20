@@ -46,12 +46,40 @@ function draw() {
 
   // === 2D Panel on Right ===
   push();
-  resetMatrix();
-  noStroke();
-  fill('#F2E9E4');
-  rect(width / 2, 0, width / 2, height);
-  pop();
 
+  // Switch to 2D-friendly projection and view
+  resetMatrix();
+  ortho(-width/2, width/2, height/2, -height/2, -1000, 1000);  // left, right, bottom, top
+  camera(0, 0, (height/2) / tan(PI/6), 0, 0, 0, 0, -1, 0);       // standard orthographic camera
+
+  noLights();
+  noStroke();
+  
+  rectMode(CENTER);
+  
+  translate(-width/2, 0);
+
+  // Background of panel
+  fill('#F2E9E4');
+  rect(width / 4, 0, width / 2, height);  // center-aligned
+
+  noFill();
+  stroke(0);
+  strokeWeight(4);
+  rect(width / 4, 0, 500, 500);  // centered correctly
+  
+  strokeWeight(1);
+  line(width/4 - 250, 0, width/4 + 250, 0);
+  line(width/4, -250, width/4, 250);
+  fill(0, 0, 0);
+  textSize(15);
+  textAlign(CENTER, CENTER);
+  text("0", width / 4 + 7.5, 10);
+  text("X", width / 4 - 257.5, -2.5);
+  text("Y", width / 4, -262.5);
+
+  pop();
+  
   angle += 0.01;
 }
 
