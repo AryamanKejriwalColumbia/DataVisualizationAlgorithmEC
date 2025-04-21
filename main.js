@@ -6,6 +6,7 @@ let current_point_coords = [0, 0];
 
 let alphaSlider, epsilonSlider;
 let alpha = 0.1, epsilon = 0.01;
+let rotSlider;
 
 const SURFACE_SCALE = 1.2;
 
@@ -31,7 +32,7 @@ function setup() {
   arrow_path = [current_point_coords];
   
   // Alpha slider
-  alphaSlider = createSlider(0, 1, 0.1, 0.01); // min, max, default, step
+  alphaSlider = createSlider(0, 0.5, 0.1, 0.01); // min, max, default, step
   alphaSlider.position(width*3/4 - 50, 30);
   alphaSlider.style('width', '200px');
   alphaSlider.style('z-index', '1000'); // so it's above the canvas
@@ -41,6 +42,12 @@ function setup() {
   epsilonSlider.position(width*3/4 - 50, 50);
   epsilonSlider.style('width', '200px');
   epsilonSlider.style('z-index', '1000');
+  
+  // Rotation Speed slider
+  rotSlider = createSlider(0, 0.02, 0.005, 0.001);
+  rotSlider.position(width*1/4 - 50, 50);
+  rotSlider.style('width', '200px');
+  rotSlider.style('z-index', '1000');
   
   // Reset button
   resetButton = createButton('Reset');
@@ -86,6 +93,11 @@ function draw() {
   sphere(0.1);
   translate(0, 0, -1);*/
   draw_surface(surfacePoints);
+  fill(0);
+  stroke(0);
+  strokeWeight(1);
+  draw_line_path_3D(arrow_path);
+  
   translate(current_point_coords[0], current_point_coords[1], compute_loss(current_point_coords[0], current_point_coords[1])+0.01);
   shininess(40);
   ambientMaterial('black');
@@ -157,7 +169,7 @@ function draw() {
 
   pop();
   
-  angle += 0.005;
+  angle += rotSlider.value();
 }
 
 function arrow(x1, y1, x2, y2, offset) {
@@ -206,6 +218,12 @@ function next() {
 function draw_arrow_path(path) {
   for(let i = 0; i < path.length-1; i +=1) {
     arrow(320-path[i][0]*250, path[i][1]*250, 320-(path[i+1][0])*250, (path[i+1][1])*250, compute_length([path[i][0] - path[i+1][0] , path[i][1] - path[i+1][1]])*50);
+  }
+}
+
+function draw_line_path_3D(path) {
+  for(let i = 0; i < path.length-1; i +=1) {
+    line(path[i][0], path[i][1], compute_loss(path[i][0], path[i][1]), path[i+1][0], path[i+1][1], compute_loss(path[i+1][0], path[i+1][1]));
   }
 }
 
