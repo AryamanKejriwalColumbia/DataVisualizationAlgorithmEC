@@ -9,6 +9,12 @@ let alpha = 0.1, epsilon = 0.01;
 
 const SURFACE_SCALE = 1.2;
 
+let resetButton;
+let nextButton;
+let status = 0;
+
+arrow_path = [];
+
 function preload() {
   font = loadFont('https://cdnjs.cloudflare.com/ajax/libs/topcoat/0.8.0/font/SourceCodePro-Regular.otf');
 }
@@ -17,8 +23,12 @@ function setup() {
   createCanvas(1280, 720, WEBGL);
   textFont(font);
   textSize(0.1);
-  surfacePoints = get_loss_surface_points(-SURFACE_SCALE, SURFACE_SCALE, -SURFACE_SCALE, SURFACE_SCALE, 20, 20);
+  current_point_coords[0] = random(-1, 1);
+  current_point_coords[1] = random(-1, 1);
+  surfacePoints = get_loss_surface_points(-SURFACE_SCALE, SURFACE_SCALE, -SURFACE_SCALE, SURFACE_SCALE, 30, 30);
   //console.log(surfacePoints);
+  
+  arrow_path = [current_point_coords];
   
   // Alpha slider
   alphaSlider = createSlider(0, 1, 0.1, 0.01); // min, max, default, step
@@ -31,6 +41,18 @@ function setup() {
   epsilonSlider.position(width*3/4 - 50, 50);
   epsilonSlider.style('width', '200px');
   epsilonSlider.style('z-index', '1000');
+  
+  // Reset button
+  resetButton = createButton('Reset');
+  resetButton.position(width * 3 / 4 - 50, 80);
+  resetButton.mousePressed(reset);
+  resetButton.style('z-index', '1000');
+  
+  // Next button
+  resetButton = createButton('Next Step');
+  resetButton.position(width * 3 / 4 + 50, 80);
+  resetButton.mousePressed(next);
+  resetButton.style('z-index', '1000');
 }
 
 function draw() {
@@ -106,12 +128,12 @@ function draw() {
   text("Y", width / 4, 262.5);
   
   fill(0);
-textAlign(LEFT, TOP);
-textSize(15);
-scale(-1, 1); 
-text("Alpha = " + nf(alpha, 1, 2), -width/8, -height/2 + 30);
-text("Epsilon = " + nf(epsilon, 1, 2), -width/8, -height/2 + 50);
-scale(-1, 1); 
+  textAlign(LEFT, TOP);
+  textSize(15);
+  scale(-1, 1); 
+  text("Alpha = " + nf(alpha, 1, 2), -width/8, -height/2 + 30);
+  text("Epsilon = " + nf(epsilon, 1, 2), -width/8, -height/2 + 50);
+  scale(-1, 1); 
   
   let localMouse = localMouseCoords();
   
@@ -130,6 +152,7 @@ scale(-1, 1);
   
   arrow(320-current_point_coords[0]*250, current_point_coords[1]*250, 320-(current_point_coords[0] - gradient[0]*alpha)*250, (current_point_coords[1] - gradient[1]*alpha)*250, compute_length(gradient)*alpha*50);
   
+  draw_arrow_path(arrow_path);
   //current_point_coords = [current_point_coords[0] - gradient[0]*alpha, current_point_coords[1] - gradient[1]*alpha]
 
   pop();
@@ -157,8 +180,33 @@ function mouseClicked() {
     let y = localMouse[1] / 250;
     
     current_point_coords = [x, y];
+    arrow_path = [current_point_coords];
   }
   
+}
+
+function reset() {
+  current_point_coords[0] = random(-1, 1);
+  current_point_coords[1] = random(-1, 1);
+  
+  status = 0;
+  
+  arrow_path = [current_point_coords];
+}
+
+function next() {
+  let gradient = compute_gradient(current_point_coords[0], current_point_coords[1]);
+  current_point_coords = [current_point_coords[0] - gradient[0]*alpha, current_point_coords[1] - gradient[1]*alpha];
+  arrow_path.push(current_point_coords);
+  
+  status = 1;
+}
+
+
+function draw_arrow_path(path) {
+  for(let i = 0; i < path.length-1; i +=1) {
+    arrow(320-path[i][0]*250, path[i][1]*250, 320-(path[i+1][0])*250, (path[i+1][1])*250, compute_length([path[i][0] - path[i+1][0] , path[i][1] - path[i+1][1]])*50);
+  }
 }
 
 // === Input Space Functionality ===
@@ -182,17 +230,17 @@ function localMouseCoords() {
 
 // === Compute Surface ===
 function compute_loss(x, y) {
-  let expPart = Math.exp(Math.sin(2.5 * x) + Math.cos(3 * y));
+  let expPart = Math.exp(Math.sin(1.2*2.5 * x) + Math.cos(1.2*3 * y));
   let sqrtPart = Math.sqrt(x * x + y * y);
   return -0.25 + 0.13 * expPart + 0.4 * sqrtPart;
 }
 
 function compute_gradient(x, y) {
-  let expPart = Math.exp(Math.sin(2.5 * x) + Math.cos(3 * y));
+  let expPart = Math.exp(Math.sin(1.2*2.5 * x) + Math.cos(1.2*3 * y));
   let sqrtPart = Math.sqrt(x * x + y * y);
 
-  let dL_dx = 0.13 * expPart*Math.cos(2.5*x) * 2.5 + (0.4 * x)/sqrtPart;
-  let dL_dy = 0.13 * expPart*(-Math.sin(3*y)) * 3 + (0.4 * y)/sqrtPart;
+  let dL_dx = 0.13 * expPart*Math.cos(1.2*2.5*x) * 1.2*2.5 + (0.4 * x)/sqrtPart;
+  let dL_dy = 0.13 * expPart*(-Math.sin(1.2*3*y)) * 1.2*3 + (0.4 * y)/sqrtPart;
   
   if(isNaN(dL_dx)) {
     dL_dx = 0;
