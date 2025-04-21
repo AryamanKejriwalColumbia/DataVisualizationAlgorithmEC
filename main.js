@@ -2,6 +2,13 @@ let surfacePoints = [];
 let angle = 0;
 let font;
 
+let current_point_coords = [0, 0];
+
+let alphaSlider, epsilonSlider;
+let alpha = 0.1, epsilon = 0.01;
+
+const SURFACE_SCALE = 1.2;
+
 function preload() {
   font = loadFont('https://cdnjs.cloudflare.com/ajax/libs/topcoat/0.8.0/font/SourceCodePro-Regular.otf');
 }
@@ -10,13 +17,28 @@ function setup() {
   createCanvas(1280, 720, WEBGL);
   textFont(font);
   textSize(0.1);
-  surfacePoints = get_loss_surface_points(-1, 1, -1, 1, 20, 20);
+  surfacePoints = get_loss_surface_points(-SURFACE_SCALE, SURFACE_SCALE, -SURFACE_SCALE, SURFACE_SCALE, 20, 20);
   //console.log(surfacePoints);
+  
+  // Alpha slider
+  alphaSlider = createSlider(0, 1, 0.1, 0.01); // min, max, default, step
+  alphaSlider.position(width*3/4 - 50, 30);
+  alphaSlider.style('width', '200px');
+  alphaSlider.style('z-index', '1000'); // so it's above the canvas
+
+  // Epsilon slider
+  epsilonSlider = createSlider(0.01, 0.1, 0.01, 0.01);
+  epsilonSlider.position(width*3/4 - 50, 50);
+  epsilonSlider.style('width', '200px');
+  epsilonSlider.style('z-index', '1000');
 }
 
 function draw() {
   clear();
   background('#F2E9E4');
+  
+  alpha = alphaSlider.value();
+  epsilon = epsilonSlider.value();
 
   // === 3D Section ===
   push();
@@ -29,11 +51,11 @@ function draw() {
   ambientLight(255);
   //pointLight(100, 100, 100, -2, 0, 0);
   //directionalLight(100, 100, 100, -1, -1, -1); // from top-left-front
-  directionalLight(255, 255, 255, 1, 1, 1);    // from bottom-right-back
+  directionalLight(240, 240, 240, 1, 1, 1);    // from bottom-right-back
 
   ambientMaterial('grey');
-  specularMaterial(10, 10, 10);
-  shininess(1);
+  specularMaterial(50, 50, 50);
+  shininess(10);
 
   draw_axes();
   noStroke();
@@ -42,6 +64,11 @@ function draw() {
   sphere(0.1);
   translate(0, 0, -1);*/
   draw_surface(surfacePoints);
+  translate(current_point_coords[0], current_point_coords[1], compute_loss(current_point_coords[0], current_point_coords[1])+0.01);
+  shininess(40);
+  ambientMaterial('black');
+  sphere(0.05);
+  translate(-current_point_coords[0], -current_point_coords[1], -compute_loss(current_point_coords[0], current_point_coords[1])-0.01);
   pop();
 
   // === 2D Panel on Right ===
@@ -66,7 +93,7 @@ function draw() {
   noFill();
   stroke(0);
   strokeWeight(4);
-  rect(width / 4, 0, 500, 500);  // centered correctly
+  rect(width / 4, 0, 500, 500); // This is input space rectangle
   
   strokeWeight(1);
   line(width/4 - 250, 0, width/4 + 250, 0);
@@ -76,11 +103,70 @@ function draw() {
   textAlign(CENTER, CENTER);
   text("0", width / 4 + 7.5, 10);
   text("X", width / 4 - 257.5, -2.5);
-  text("Y", width / 4, -262.5);
+  text("Y", width / 4, 262.5);
+  
+  fill(0);
+textAlign(LEFT, TOP);
+textSize(15);
+scale(-1, 1); 
+text("Alpha = " + nf(alpha, 1, 2), -width/8, -height/2 + 30);
+text("Epsilon = " + nf(epsilon, 1, 2), -width/8, -height/2 + 50);
+scale(-1, 1); 
+  
+  let localMouse = localMouseCoords();
+  
+  if(Math.abs(localMouse[0]) <= 250 && Math.abs(localMouse[1]) <= 250) {
+    //console.log('yes');
+    circle(320-localMouse[0], localMouse[1], 10);
+    let x = localMouse[0] / 250;
+    let y = localMouse[1] / 250;
+  }
+  
+  circle(320-current_point_coords[0]*250, current_point_coords[1]*250, 10);
+  
+  let gradient = compute_gradient(current_point_coords[0], current_point_coords[1]);
+  
+  //console.log(gradient);
+  
+  line(320-current_point_coords[0]*250, current_point_coords[1]*250, 320-(current_point_coords[0] - gradient[0]*alpha)*250, (current_point_coords[1] - gradient[1]*alpha)*250);
+  
+  //current_point_coords = [current_point_coords[0] - gradient[0]*alpha, current_point_coords[1] - gradient[1]*alpha]
 
   pop();
   
-  angle += 0.01;
+  angle += 0.005;
+}
+
+function mouseClicked() {
+  
+  let localMouse = localMouseCoords();
+  
+  if(Math.abs(localMouse[0]) <= 250 && Math.abs(localMouse[1]) <= 250) {
+    let x = localMouse[0] / 250;
+    let y = localMouse[1] / 250;
+    
+    current_point_coords = [x, y];
+  }
+  
+}
+
+// === Input Space Functionality ===
+function localMouseCoords() {
+  // Transform mouseX and mouseY from screen to centered coordinates
+  let localX = mouseX - width / 2;  // convert to WEBGL coordinate system
+  let localY = mouseY - height / 2;
+
+  // Shift for the 2D right panel
+  localX -= -width / 2; // undo left translate in draw
+  let panelCenterX = width / 4;
+  let panelCenterY = 0;
+
+  // Compute distance from center of the input space rect
+  let dx = localX - panelCenterX;
+  let dy = localY - panelCenterY;
+
+  //return Math.abs(dx) <= 250 && Math.abs(dy) <= 250;
+  return [dx - width/2, dy];
 }
 
 // === Compute Surface ===
@@ -88,6 +174,24 @@ function compute_loss(x, y) {
   let expPart = Math.exp(Math.sin(2.5 * x) + Math.cos(3 * y));
   let sqrtPart = Math.sqrt(x * x + y * y);
   return -0.25 + 0.13 * expPart + 0.4 * sqrtPart;
+}
+
+function compute_gradient(x, y) {
+  let expPart = Math.exp(Math.sin(2.5 * x) + Math.cos(3 * y));
+  let sqrtPart = Math.sqrt(x * x + y * y);
+
+  let dL_dx = 0.13 * expPart*Math.cos(2.5*x) * 2.5 + (0.4 * x)/sqrtPart;
+  let dL_dy = 0.13 * expPart*(-Math.sin(3*y)) * 3 + (0.4 * y)/sqrtPart;
+  
+  if(isNaN(dL_dx)) {
+    dL_dx = 0;
+  } 
+  if(isNaN(dL_dy)) {
+    dL_dy = 0;
+  }
+  
+
+  return [dL_dx, dL_dy];
 }
 
 function get_loss_surface_points(x_min, x_max, y_min, y_max, x_res, y_res) {
