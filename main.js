@@ -5,7 +5,7 @@ let font;
 let current_point_coords = [0, 0];
 
 let alphaSlider, epsilonSlider;
-let alpha = 0.2, epsilon = 0.01;
+let alpha = 0.2, epsilon = 0.05;
 let rotSlider;
 
 const SURFACE_SCALE = 1.2;
@@ -39,7 +39,7 @@ function setup() {
   alphaSlider.style('z-index', '1000'); // so it's above the canvas
 
   // Epsilon slider
-  epsilonSlider = createSlider(0.01, 0.1, 0.01, 0.01);
+  epsilonSlider = createSlider(0.01, 0.2, 0.05, 0.01);
   epsilonSlider.position(width*3/4 - 50, 50);
   epsilonSlider.style('width', '200px');
   epsilonSlider.style('z-index', '1000');
@@ -168,6 +168,10 @@ function draw() {
   circle(320-current_point_coords[0]*250, current_point_coords[1]*250, 10);
   
   let gradient = compute_gradient(current_point_coords[0], current_point_coords[1]);
+  
+  line(320+250, 280, 320+250 - epsilon*250, 280);
+  line(320+250, 280, 320+250 - epsilon*250, 280);
+  arrow(320+250, 300, 320+250 - compute_length(gradient)*alpha*250, 300, compute_length(gradient)*alpha*50);
   
   //console.log(gradient);
   
