@@ -128,13 +128,24 @@ scale(-1, 1);
   
   //console.log(gradient);
   
-  line(320-current_point_coords[0]*250, current_point_coords[1]*250, 320-(current_point_coords[0] - gradient[0]*alpha)*250, (current_point_coords[1] - gradient[1]*alpha)*250);
+  arrow(320-current_point_coords[0]*250, current_point_coords[1]*250, 320-(current_point_coords[0] - gradient[0]*alpha)*250, (current_point_coords[1] - gradient[1]*alpha)*250, compute_length(gradient)*alpha*50);
   
   //current_point_coords = [current_point_coords[0] - gradient[0]*alpha, current_point_coords[1] - gradient[1]*alpha]
 
   pop();
   
   angle += 0.005;
+}
+
+function arrow(x1, y1, x2, y2, offset) {
+  // this code is to make the arrow point
+  line(x1,y1,x2,y2)
+  push() //start new drawing state
+  var angle = atan2(y1 - y2, x1 - x2); //gets the angle of the line
+  translate(x2, y2); //translates to the destination vertex
+  rotate(angle - HALF_PI); //rotates the arrow point
+  triangle(-offset * 0.6, offset*1.5, offset * 0.6, offset*1.5, 0, 0); //draws the arrow point as a triangle
+  pop();
 }
 
 function mouseClicked() {
@@ -192,6 +203,10 @@ function compute_gradient(x, y) {
   
 
   return [dL_dx, dL_dy];
+}
+
+function compute_length(vector) {
+  return Math.sqrt(vector[0] * vector[0] + vector[1] * vector[1]);
 }
 
 function get_loss_surface_points(x_min, x_max, y_min, y_max, x_res, y_res) {
