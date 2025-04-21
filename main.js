@@ -214,12 +214,21 @@ function updateButtons() {
   if (status === 1) {
     startButton.attribute('disabled', '');
     nextButton.removeAttribute('disabled');
+    
+    alphaSlider.attribute('disabled', '');
+    epsilonSlider.attribute('disabled', '');
   } else if (status === 0) {
     startButton.removeAttribute('disabled');
     nextButton.attribute('disabled', '');
+    
+    alphaSlider.removeAttribute('disabled');
+    epsilonSlider.removeAttribute('disabled');
   } else {
     startButton.attribute('disabled', '');
     nextButton.attribute('disabled', '');
+    
+    alphaSlider.attribute('disabled', '');
+    epsilonSlider.attribute('disabled', '');
   }
 }
 
@@ -238,6 +247,12 @@ function next() {
     let gradient = compute_gradient(current_point_coords[0], current_point_coords[1]);
     current_point_coords = [current_point_coords[0] - gradient[0]*alpha, current_point_coords[1] - gradient[1]*alpha];
     arrow_path.push(current_point_coords);
+    
+    if(compute_length(compute_gradient(current_point_coords[0], current_point_coords[1]))*alpha < epsilon) {
+      status = 2;
+      updateButtons();
+      //console.log("Ended!");
+    }
   }
   
 }
@@ -245,6 +260,11 @@ function next() {
 function start() {
   status = 1;
   updateButtons();
+  if(compute_length(compute_gradient(current_point_coords[0], current_point_coords[1]))*alpha < epsilon) {
+    status = 2;
+    updateButtons();
+    //console.log("Ended!");
+  }
 }
 
 
