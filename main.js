@@ -39,7 +39,7 @@ function setup() {
   alphaSlider.style('z-index', '1000'); // so it's above the canvas
 
   // Epsilon slider
-  epsilonSlider = createSlider(0.01, 0.2, 0.05, 0.01);
+  epsilonSlider = createSlider(0., 0.2, 0.05, 0.01);
   epsilonSlider.position(width*3/4 - 50, 50);
   epsilonSlider.style('width', '200px');
   epsilonSlider.style('z-index', '1000');
