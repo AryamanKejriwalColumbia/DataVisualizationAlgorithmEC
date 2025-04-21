@@ -5,13 +5,14 @@ let font;
 let current_point_coords = [0, 0];
 
 let alphaSlider, epsilonSlider;
-let alpha = 0.1, epsilon = 0.01;
+let alpha = 0.2, epsilon = 0.01;
 let rotSlider;
 
 const SURFACE_SCALE = 1.2;
 
 let resetButton;
 let nextButton;
+let startButton;
 let status = 0;
 
 arrow_path = [];
@@ -32,7 +33,7 @@ function setup() {
   arrow_path = [current_point_coords];
   
   // Alpha slider
-  alphaSlider = createSlider(0, 0.5, 0.1, 0.01); // min, max, default, step
+  alphaSlider = createSlider(0, 0.5, 0.2, 0.01); // min, max, default, step
   alphaSlider.position(width*3/4 - 50, 30);
   alphaSlider.style('width', '200px');
   alphaSlider.style('z-index', '1000'); // so it's above the canvas
@@ -56,10 +57,18 @@ function setup() {
   resetButton.style('z-index', '1000');
   
   // Next button
-  resetButton = createButton('Next Step');
-  resetButton.position(width * 3 / 4 + 50, 80);
-  resetButton.mousePressed(next);
-  resetButton.style('z-index', '1000');
+  nextButton = createButton('Step');
+  nextButton.position(width * 3 / 4 + 50, 80);
+  nextButton.mousePressed(next);
+  nextButton.style('z-index', '1000');
+  
+  // Start button
+  startButton = createButton('Start');
+  startButton.position(width * 3 / 4, 80);
+  startButton.mousePressed(start);
+  startButton.style('z-index', '1000');
+  
+  updateButtons();
 }
 
 function draw() {
@@ -149,7 +158,7 @@ function draw() {
   
   let localMouse = localMouseCoords();
   
-  if(Math.abs(localMouse[0]) <= 250 && Math.abs(localMouse[1]) <= 250) {
+  if(Math.abs(localMouse[0]) <= 250 && Math.abs(localMouse[1]) <= 250 && status == 0) {
     //console.log('yes');
     circle(320-localMouse[0], localMouse[1], 10);
     let x = localMouse[0] / 250;
@@ -187,7 +196,7 @@ function mouseClicked() {
   
   let localMouse = localMouseCoords();
   
-  if(Math.abs(localMouse[0]) <= 250 && Math.abs(localMouse[1]) <= 250) {
+  if(Math.abs(localMouse[0]) <= 250 && Math.abs(localMouse[1]) <= 250 && status == 0) {
     let x = localMouse[0] / 250;
     let y = localMouse[1] / 250;
     
@@ -197,21 +206,41 @@ function mouseClicked() {
   
 }
 
+function updateButtons() {
+  if (status === 1) {
+    startButton.attribute('disabled', '');
+    nextButton.removeAttribute('disabled');
+  } else if (status === 0) {
+    startButton.removeAttribute('disabled');
+    nextButton.attribute('disabled', '');
+  } else {
+    startButton.attribute('disabled', '');
+    nextButton.attribute('disabled', '');
+  }
+}
+
 function reset() {
   current_point_coords[0] = random(-1, 1);
   current_point_coords[1] = random(-1, 1);
   
   status = 0;
+  updateButtons();
   
   arrow_path = [current_point_coords];
 }
 
 function next() {
-  let gradient = compute_gradient(current_point_coords[0], current_point_coords[1]);
-  current_point_coords = [current_point_coords[0] - gradient[0]*alpha, current_point_coords[1] - gradient[1]*alpha];
-  arrow_path.push(current_point_coords);
+  if(status === 1) {
+    let gradient = compute_gradient(current_point_coords[0], current_point_coords[1]);
+    current_point_coords = [current_point_coords[0] - gradient[0]*alpha, current_point_coords[1] - gradient[1]*alpha];
+    arrow_path.push(current_point_coords);
+  }
   
+}
+
+function start() {
   status = 1;
+  updateButtons();
 }
 
 
