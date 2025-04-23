@@ -14,7 +14,7 @@ let font;
 let current_point_coords = [0, 0];
 
 let alphaSlider, epsilonSlider;
-let alpha = 0.2, epsilon = 0.05;
+let alpha = 0.2, epsilon = 0.02;
 let rotSlider;
 
 const SURFACE_SCALE = 1.2;
@@ -43,37 +43,37 @@ function setup() {
   
   // Alpha slider
   alphaSlider = createSlider(0, 0.5, 0.2, 0.01); // min, max, default, step
-  alphaSlider.position(width*3/4 - 50, 30);
+  alphaSlider.position(width*1/4 + 150, 70+610);
   alphaSlider.style('width', '200px');
   alphaSlider.style('z-index', '1000'); // so it's above the canvas
 
   // Epsilon slider
-  epsilonSlider = createSlider(0, 0.2, 0.05, 0.01);
-  epsilonSlider.position(width*3/4 - 50, 50);
+  epsilonSlider = createSlider(0, 0.2, 0.02, 0.01);
+  epsilonSlider.position(width*1/4 + 150, 20+610);
   epsilonSlider.style('width', '200px');
   epsilonSlider.style('z-index', '1000');
   
   // Rotation Speed slider
   rotSlider = createSlider(0, 0.02, 0.005, 0.001);
-  rotSlider.position(width*1/4 - 50, 50);
+  rotSlider.position(width*1/4 - 80, 100);
   rotSlider.style('width', '200px');
   rotSlider.style('z-index', '1000');
   
   // Reset button
   resetButton = createButton('Reset');
-  resetButton.position(width * 3 / 4 - 50, 80);
+  resetButton.position(width * 3 / 4 - 250, 80);
   resetButton.mousePressed(reset);
   resetButton.style('z-index', '1000');
   
   // Next button
   nextButton = createButton('Step');
-  nextButton.position(width * 3 / 4 + 50, 80);
+  nextButton.position(width * 3 / 4 + 200, 80);
   nextButton.mousePressed(next);
   nextButton.style('z-index', '1000');
   
   // Start button
   startButton = createButton('Start');
-  startButton.position(width * 3 / 4, 80);
+  startButton.position(width * 3 / 4 + 150, 80);
   startButton.mousePressed(start);
   startButton.style('z-index', '1000');
   
@@ -144,7 +144,13 @@ function draw() {
   // Background of panel
   fill(c4);
   rect(width / 4, 0, width / 2, height);  // center-aligned
-
+  
+  scale(-1, 1); 
+  fill(0);
+  textSize(40);
+  text("Gradient Descent", -800, height/2 - 670);
+  scale(-1, 1); 
+  
   stroke(0);
   strokeWeight(4);
   fill(c2);
@@ -164,8 +170,18 @@ function draw() {
   textAlign(LEFT, TOP);
   textSize(15);
   scale(-1, 1); 
-  text("Alpha = " + nf(alpha, 1, 2), -width/8, -height/2 + 30);
-  text("Epsilon = " + nf(epsilon, 1, 2), -width/8, -height/2 + 50);
+  text("Alpha = " + nf(alpha, 1, 2), -width + 340, -height/2 + 70+610);
+  text("Epsilon = " + nf(epsilon, 1, 2), -width + 340, -height/2 + 20+610);
+  text("Model Rotation Speed:", -width + 50, -height/2 + 100);
+  text("Unscaled Gradient:", -width + 510, -height/2 + 50+610);
+  text("Current coordinates: (" + nf(current_point_coords[0], 1, 2) + ", " + nf(current_point_coords[1], 1, 2) + ", L=" + nf(compute_loss(current_point_coords[0], current_point_coords[1]), 1, 3) + ")", -width + 835, -height/2 + 20+610);
+  if(status === 2) {
+    textSize(20);
+    fill(c1);
+    text("Loss minimized at (" + nf(current_point_coords[0], 1, 2) + ", " + nf(current_point_coords[1], 1, 2) + ", L=" + nf(compute_loss(current_point_coords[0], current_point_coords[1]), 1, 3) + ")", -width, -height/2 + 500);
+    fill(0);
+    textSize(15);
+  }
   scale(-1, 1); 
   
   let localMouse = localMouseCoords();
@@ -182,7 +198,9 @@ function draw() {
   
   fill(c7);
   stroke(c7);
-  arrow(320+250, 300, 320+250 - compute_length(gradient)*alpha*250, 300, compute_length(gradient)*alpha*50);
+  arrow(320+250, 300+30, 320+250 - compute_length(gradient)*alpha*250, 300+30, compute_length(gradient)*alpha*25);
+  
+  arrow(320+250, 310, 320+250 - compute_length(gradient)*250, 310, compute_length(gradient)*25);
   
   fill(c4);
   stroke(c4);
