@@ -43,19 +43,19 @@ function setup() {
   
   // Alpha slider
   alphaSlider = createSlider(0, 0.5, 0.2, 0.01); // min, max, default, step
-  alphaSlider.position(width*1/4 + 150, 70+610 + 15);
+  alphaSlider.position(width*1/4 + 150 + 5, 45+610 + 10);
   alphaSlider.style('width', '200px');
   alphaSlider.style('z-index', '1000'); // so it's above the canvas
 
   // Epsilon slider
   epsilonSlider = createSlider(0, 0.2, 0.02, 0.01);
-  epsilonSlider.position(width*1/4 + 150, 20+610 + 15);
+  epsilonSlider.position(width*1/4 + 150 + 5, 20+610 + 10);
   epsilonSlider.style('width', '200px');
   epsilonSlider.style('z-index', '1000');
   
   // Rotation Speed slider
   rotSlider = createSlider(0, 0.02, 0.005, 0.001);
-  rotSlider.position(width*1/4 - 80, 100 + 15);
+  rotSlider.position(width*1/4 - 80 + 5, 590 + 10);
   rotSlider.style('width', '200px');
   rotSlider.style('z-index', '1000');
   
@@ -149,6 +149,17 @@ function draw() {
   fill(0);
   textSize(40);
   text("Gradient Descent", -800, height/2 - 670);
+  textSize(15);
+  fill(c7);
+  text("(to estimate the minimum of a Loss function)", -807, height/2 - 650);
+  
+  fill(0);
+  textSize(30);
+  text("Sample Loss function", -1150, height/2 - 600);
+  
+  textSize(13);
+  fill(c5);
+  text("L(x,y)=-0.25 + 0.13e^(sin2.5x + cos3y)+0.4sqrt(x^2+y^2)", -1185, height/2 - 580);
   scale(-1, 1); 
   
   stroke(0);
@@ -170,11 +181,15 @@ function draw() {
   textAlign(LEFT, TOP);
   textSize(15);
   scale(-1, 1); 
-  text("Alpha = " + nf(alpha, 1, 2), -width + 340, -height/2 + 70+610);
+  text("Alpha = " + nf(alpha, 1, 2), -width + 340, -height/2 + 50+610);
   text("Epsilon = " + nf(epsilon, 1, 2), -width + 340, -height/2 + 20+610);
-  text("Model Rotation Speed:", -width + 50, -height/2 + 100);
-  text("Unscaled Gradient:", -width + 510, -height/2 + 50+610);
+  text("Model Rotation Speed:", -width + 50, -height/2 + 590);
+  text("Unscaled Gradient:", -width + 510, -height/2 + 70+610);
   text("Current coordinates: (" + nf(current_point_coords[0], 1, 2) + ", " + nf(current_point_coords[1], 1, 2) + ", L=" + nf(compute_loss(current_point_coords[0], current_point_coords[1]), 1, 3) + ")", -width + 835, -height/2 + 20+610);
+  textSize(13);
+  fill(c5);
+  text("Click below to select a starting point", -width + 790, -height/2 + 85);
+  
   if(status === 2) {
     textSize(20);
     fill(c1);
@@ -198,9 +213,9 @@ function draw() {
   
   fill(c7);
   stroke(c7);
-  arrow(320+250, 300+30, 320+250 - compute_length(gradient)*alpha*250, 300+30, compute_length(gradient)*alpha*25);
+  arrow(320+250, 310, 320+250 - compute_length(gradient)*alpha*250, 310, compute_length(gradient)*alpha*25);
   
-  arrow(320+250, 310, 320+250 - compute_length(gradient)*250, 310, compute_length(gradient)*25);
+  arrow(320+250, 330, 320+250 - compute_length(gradient)*250, 330, compute_length(gradient)*25);
   
   fill(c4);
   stroke(c4);
@@ -500,7 +515,7 @@ function draw_axes() {
   translate(0, 0, 1.05);
   rotateZ(-angle);
   fill(0);
-  text("Z", 0, 0, 0);
+  text("L", 0, 0, 0);
   pop();
 }
 
