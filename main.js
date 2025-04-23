@@ -43,19 +43,19 @@ function setup() {
   
   // Alpha slider
   alphaSlider = createSlider(0, 0.5, 0.2, 0.01); // min, max, default, step
-  alphaSlider.position(width*1/4 + 150, 70+610);
+  alphaSlider.position(width*1/4 + 150, 70+610 + 15);
   alphaSlider.style('width', '200px');
   alphaSlider.style('z-index', '1000'); // so it's above the canvas
 
   // Epsilon slider
   epsilonSlider = createSlider(0, 0.2, 0.02, 0.01);
-  epsilonSlider.position(width*1/4 + 150, 20+610);
+  epsilonSlider.position(width*1/4 + 150, 20+610 + 15);
   epsilonSlider.style('width', '200px');
   epsilonSlider.style('z-index', '1000');
   
   // Rotation Speed slider
   rotSlider = createSlider(0, 0.02, 0.005, 0.001);
-  rotSlider.position(width*1/4 - 80, 100);
+  rotSlider.position(width*1/4 - 80, 100 + 15);
   rotSlider.style('width', '200px');
   rotSlider.style('z-index', '1000');
   
@@ -178,7 +178,7 @@ function draw() {
   if(status === 2) {
     textSize(20);
     fill(c1);
-    text("Loss minimized at (" + nf(current_point_coords[0], 1, 2) + ", " + nf(current_point_coords[1], 1, 2) + ", L=" + nf(compute_loss(current_point_coords[0], current_point_coords[1]), 1, 3) + ")", -width, -height/2 + 500);
+    text("Loss minimized at (" + nf(current_point_coords[0], 1, 2) + ", " + nf(current_point_coords[1], 1, 2) + ", L=" + nf(compute_loss(current_point_coords[0], current_point_coords[1]), 1, 3) + ")", -width + 100, -height/2 + 500);
     fill(0);
     textSize(15);
   }
