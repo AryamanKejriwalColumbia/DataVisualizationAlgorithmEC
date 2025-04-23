@@ -61,19 +61,19 @@ function setup() {
   
   // Reset button
   resetButton = createButton('Reset');
-  resetButton.position(width * 3 / 4 - 250, 80);
+  resetButton.position(width * 3 / 4 - 250+ 5, 80+10);
   resetButton.mousePressed(reset);
   resetButton.style('z-index', '1000');
   
   // Next button
   nextButton = createButton('Step');
-  nextButton.position(width * 3 / 4 + 200, 80);
+  nextButton.position(width * 3 / 4 + 200+ 5, 80+10);
   nextButton.mousePressed(next);
   nextButton.style('z-index', '1000');
   
   // Start button
   startButton = createButton('Start');
-  startButton.position(width * 3 / 4 + 150, 80);
+  startButton.position(width * 3 / 4 + 150+ 5, 80+10);
   startButton.mousePressed(start);
   startButton.style('z-index', '1000');
   
