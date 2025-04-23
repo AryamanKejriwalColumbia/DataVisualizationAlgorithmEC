@@ -1,3 +1,12 @@
+// Final Colour Palette
+let c1 = '#88352b';
+let c2 = '#d0755c';
+let c3 = '#ebceb1';
+let c4 = '#eee9de';
+let c5 = '#929489';
+let c6 = '#798187';
+let c7 = '#576169';
+
 let surfacePoints = [];
 let angle = 0;
 let font;
@@ -39,7 +48,7 @@ function setup() {
   alphaSlider.style('z-index', '1000'); // so it's above the canvas
 
   // Epsilon slider
-  epsilonSlider = createSlider(0., 0.2, 0.05, 0.01);
+  epsilonSlider = createSlider(0, 0.2, 0.05, 0.01);
   epsilonSlider.position(width*3/4 - 50, 50);
   epsilonSlider.style('width', '200px');
   epsilonSlider.style('z-index', '1000');
@@ -73,7 +82,7 @@ function setup() {
 
 function draw() {
   clear();
-  background('#F2E9E4');
+  background(c4);
   
   alpha = alphaSlider.value();
   epsilon = epsilonSlider.value();
@@ -88,12 +97,12 @@ function draw() {
   // === Lighting ===
   ambientLight(255);
   //pointLight(100, 100, 100, -2, 0, 0);
-  //directionalLight(100, 100, 100, -1, -1, -1); // from top-left-front
-  directionalLight(240, 240, 240, 1, 1, 1);    // from bottom-right-back
+  directionalLight(20, 20, 20, -1, -1, -1); // from top-left-front
+  directionalLight(80, 80, 80, 1, 1, 1);    // from bottom-right-back
 
-  ambientMaterial('grey');
-  specularMaterial(50, 50, 50);
-  shininess(10);
+  ambientMaterial(c2);
+  specularMaterial(c2);
+  shininess(50);
 
   draw_axes();
   noStroke();
@@ -103,13 +112,16 @@ function draw() {
   translate(0, 0, -1);*/
   draw_surface(surfacePoints);
   fill(0);
-  stroke(0);
+  stroke(c4);
   strokeWeight(1);
   draw_line_path_3D(arrow_path);
   
   translate(current_point_coords[0], current_point_coords[1], compute_loss(current_point_coords[0], current_point_coords[1])+0.01);
-  shininess(40);
-  ambientMaterial('black');
+  shininess(10);
+  ambientMaterial(c7);
+  specularMaterial(c4);
+  noStroke();
+  //noFill();
   sphere(0.05);
   translate(-current_point_coords[0], -current_point_coords[1], -compute_loss(current_point_coords[0], current_point_coords[1])-0.01);
   pop();
@@ -130,12 +142,12 @@ function draw() {
   translate(-width/2, 0);
 
   // Background of panel
-  fill('#F2E9E4');
+  fill(c4);
   rect(width / 4, 0, width / 2, height);  // center-aligned
 
-  noFill();
   stroke(0);
   strokeWeight(4);
+  fill(c2);
   rect(width / 4, 0, 500, 500); // This is input space rectangle
   
   strokeWeight(1);
@@ -157,21 +169,22 @@ function draw() {
   scale(-1, 1); 
   
   let localMouse = localMouseCoords();
-  
-  if(Math.abs(localMouse[0]) <= 250 && Math.abs(localMouse[1]) <= 250 && status == 0) {
-    //console.log('yes');
-    circle(320-localMouse[0], localMouse[1], 10);
-    let x = localMouse[0] / 250;
-    let y = localMouse[1] / 250;
-  }
-  
-  circle(320-current_point_coords[0]*250, current_point_coords[1]*250, 10);
+
+  fill(c1);
+  stroke(c1);
   
   let gradient = compute_gradient(current_point_coords[0], current_point_coords[1]);
   
   line(320+250, 280, 320+250 - epsilon*250, 280);
-  line(320+250, 280, 320+250 - epsilon*250, 280);
+  line(320+250, 275, 320+250, 285);
+  line(320+250 - epsilon*250, 275, 320+250 - epsilon*250, 285);
+  
+  fill(c7);
+  stroke(c7);
   arrow(320+250, 300, 320+250 - compute_length(gradient)*alpha*250, 300, compute_length(gradient)*alpha*50);
+  
+  fill(c4);
+  stroke(c4);
   
   //console.log(gradient);
   
@@ -179,6 +192,17 @@ function draw() {
   
   draw_arrow_path(arrow_path);
   //current_point_coords = [current_point_coords[0] - gradient[0]*alpha, current_point_coords[1] - gradient[1]*alpha]
+  
+  fill(c7);
+  stroke(c7);
+  
+  if(Math.abs(localMouse[0]) <= 250 && Math.abs(localMouse[1]) <= 250 && status == 0) {
+    //console.log('yes');
+    circle(320-localMouse[0], localMouse[1], 10);
+    let x = localMouse[0] / 250;
+    let y = localMouse[1] / 250;
+  }
+  circle(320-current_point_coords[0]*250, current_point_coords[1]*250, 10);
 
   pop();
   
