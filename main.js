@@ -113,7 +113,7 @@ function draw() {
   draw_surface(surfacePoints);
   fill(0);
   stroke(c4);
-  strokeWeight(1);
+  strokeWeight(3);
   draw_line_path_3D(arrow_path);
   
   translate(current_point_coords[0], current_point_coords[1], compute_loss(current_point_coords[0], current_point_coords[1])+0.01);
@@ -172,6 +172,7 @@ function draw() {
 
   fill(c1);
   stroke(c1);
+  strokeWeight(2);
   
   let gradient = compute_gradient(current_point_coords[0], current_point_coords[1]);
   
@@ -195,6 +196,8 @@ function draw() {
   
   fill(c7);
   stroke(c7);
+  noStroke();
+  translate(0, 0, 100);
   
   if(Math.abs(localMouse[0]) <= 250 && Math.abs(localMouse[1]) <= 250 && status == 0) {
     //console.log('yes');
@@ -203,7 +206,7 @@ function draw() {
     let y = localMouse[1] / 250;
   }
   circle(320-current_point_coords[0]*250, current_point_coords[1]*250, 10);
-
+  translate(0, 0, -100);
   pop();
   
   angle += rotSlider.value();
